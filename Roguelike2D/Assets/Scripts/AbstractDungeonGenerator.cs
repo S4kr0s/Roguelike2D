@@ -10,10 +10,13 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
     [SerializeField]
     protected Vector2Int startPosition = Vector2Int.zero;
 
+    public static event Action OnDungeonGenerationComplete;
+
     public void GenerateDungeon()
     {
         tilemapVisualizer.Clear();
         RunProceduralGeneration();
+        OnDungeonGenerationComplete?.Invoke();
     }
 
     protected abstract void RunProceduralGeneration();

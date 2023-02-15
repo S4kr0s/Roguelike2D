@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Dungeon_Tileset_30
+  m_Name: DungeonWallTop4
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 1520291770, guid: 3f631024a5f88e14283bf5f512abeb4f, type: 3}
+  m_Sprite: {fileID: -1840656299, guid: 3f631024a5f88e14283bf5f512abeb4f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

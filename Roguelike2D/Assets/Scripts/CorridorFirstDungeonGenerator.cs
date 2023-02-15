@@ -9,6 +9,9 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkMapGenerator
     [SerializeField] private int corridorLength = 14, corridorCount = 5;
     [SerializeField] [Range(0.1f, 1f)] private float roomPercent = 0.8f;
 
+    private Dictionary<Vector2Int, HashSet<Vector2Int>> roomsDictionary = new Dictionary<Vector2Int, HashSet<Vector2Int>>();
+    private HashSet<Vector2Int> floorPositions, corridorPositions;
+
     protected override void RunProceduralGeneration()
     {
         CorridorFirstGeneration();
@@ -71,13 +74,26 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkMapGenerator
         int roomsToCreateCount = Mathf.RoundToInt(potentialRoomPositions.Count * roomPercent);
 
         List<Vector2Int> roomsToCreate = potentialRoomPositions.OrderBy(x => Guid.NewGuid()).Take(roomsToCreateCount).ToList();
+        ClearRoomData();
 
         foreach (var roomPosition in roomsToCreate)
         {
             var roomFloor = RunRandomWalk(randomWalkParameters, roomPosition);
+
+            SaveRoomData(roomPosition, roomFloor);
             roomPositions.UnionWith(roomFloor);
         }
         return roomPositions;
+    }
+
+    private void ClearRoomData()
+    {
+        roomsDictionary.Clear();
+    }
+
+    private void SaveRoomData(Vector2Int roomPosition, HashSet<Vector2Int> roomFloor)
+    {
+        roomsDictionary[roomPosition] = roomFloor;
     }
 
     private void CreateCorridors(HashSet<Vector2Int> floorPositions, HashSet<Vector2Int> potentialRoomPositions)
@@ -91,5 +107,6 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkMapGenerator
             potentialRoomPositions.Add(currentPosition);
             floorPositions.UnionWith(corridor);
         }
+        corridorPositions = new HashSet<Vector2Int>(floorPositions);
     }
 }
