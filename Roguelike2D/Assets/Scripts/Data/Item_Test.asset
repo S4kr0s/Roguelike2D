@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79735f0f29721924f99f941b9a44c4ad, type: 3}
+  m_Name: Item_Test
+  m_EditorClassIdentifier: 
+  ItemSprite: {fileID: 21300000, guid: b281b91a70a624a0da1c43adc1c30c7b, type: 3}
+  ItemSize: {x: 1, y: 1}
+  Corner: 0
+  NearWallUp: 0
+  NearWallDown: 0
+  NearWallRight: 0
+  NearWallLeft: 0
+  Inner: 1
+  PlacementQuantityMin: 1
+  PlacementQuantityMax: 1
+  PlaceAsGroup: 0
+  GroupMinCount: 1
+  GroupMaxCount: 1

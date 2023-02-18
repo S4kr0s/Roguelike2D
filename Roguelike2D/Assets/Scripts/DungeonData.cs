@@ -11,8 +11,8 @@ public class DungeonData : MonoBehaviour
 {
     public List<Room> Rooms { get; set; } = new List<Room>();
     public HashSet<Vector2Int> Path { get; set; } = new HashSet<Vector2Int>();
-
     public GameObject PlayerReference { get; set; }
+
     public void Reset()
     {
         foreach (Room room in Rooms)
@@ -29,12 +29,6 @@ public class DungeonData : MonoBehaviour
         Rooms = new();
         Path = new();
         Destroy(PlayerReference);
-    }
-
-    public IEnumerator TutorialCoroutine(Action code)
-    {
-        yield return new WaitForSeconds(1);
-        code();
     }
 }
 

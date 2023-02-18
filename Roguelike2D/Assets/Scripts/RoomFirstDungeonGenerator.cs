@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
@@ -17,28 +18,40 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
 
     [SerializeField] private bool fullyRandomize = false;
 
+    [SerializeField] private DungeonData dungeonData;
+
+    [SerializeField] private List<BoundsInt> roomsList = new List<BoundsInt>();
+
+    private void Awake()
+    {
+        dungeonData = FindObjectOfType<DungeonData>();
+        if (dungeonData == null)
+            dungeonData = this.gameObject.AddComponent<DungeonData>();
+    }
+
     protected override void RunProceduralGeneration()
     {
+        dungeonData.Reset();
         CreateRooms();
     }
 
     private void CreateRooms()
     {
-        var roomsList = ProcedualGenerationAlgorithms.BinarySpacePartitioning(new BoundsInt((Vector3Int)startPosition,
+        roomsList = ProcedualGenerationAlgorithms.BinarySpacePartitioning(new BoundsInt((Vector3Int)startPosition,
             new Vector3Int(dungeonWidth, dungeonHeight, 0)), minRoomWidth, minRoomHeight);
 
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
 
         if (fullyRandomize)
         {
-            floor = CreateFullyRandomizedRooms(roomsList);
+            floor = CreateFullyRandomizedRooms();
         }
         else
         {
             if (randomWalkRooms)
-                floor = CreateRoomsRandomly(roomsList);
+                floor = CreateRoomsRandomly();
             else
-                floor = CreateSimpleRooms(roomsList);
+                floor = CreateSimpleRooms();
         }
 
         List<Vector2Int> roomCenters = new List<Vector2Int>();
@@ -54,41 +67,51 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
         WallGenerator.CreateWalls(floor, tilemapVisualizer);
     }
 
-    private HashSet<Vector2Int> CreateFullyRandomizedRooms(List<BoundsInt> _roomsList)
+    private HashSet<Vector2Int> CreateFullyRandomizedRooms()
     {
-        List<BoundsInt> roomsList = new List<BoundsInt>(_roomsList);
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
 
         var random = new System.Random();
 
-        var randomRooms = new List<BoundsInt>();
-        var simpleRooms = new List<BoundsInt>();
-        while (roomsList.Count > 0)
+        for (int i = 0; i < roomsList.Count; i++)
         {
-            int index = random.Next(roomsList.Count);
-
-            BoundsInt curItem = roomsList[index];
-
             int listChoice = random.Next(2);
 
             if (listChoice == 1)
             {
-                randomRooms.Add(curItem);
+                var roomBounds = roomsList[i];
+                var roomCenter = new Vector2Int(Mathf.RoundToInt(roomBounds.center.x), Mathf.RoundToInt(roomBounds.center.y));
+                var roomFloor = RunRandomWalk(randomWalkParameters, roomCenter);
+                foreach (var position in roomFloor)
+                {
+                    if (position.x >= (roomBounds.xMin + offset) && position.x <= (roomBounds.xMax - offset) &&
+                        position.y >= (roomBounds.yMin + offset) && position.y <= (roomBounds.yMax - offset))
+                    {
+                        floor.Add(position);
+                    }
+                }
+                dungeonData.Rooms.Add(new Room(roomsList[i].center, roomFloor));
             }
             else
             {
-                simpleRooms.Add(curItem);
+                var roomFloor = new HashSet<Vector2Int>();
+                for (int col = offset; col < roomsList[i].size.x - offset; col++)
+                {
+                    for (int row = offset; row < roomsList[i].size.y; row++)
+                    {
+                        Vector2Int position = (Vector2Int)roomsList[i].min + new Vector2Int(col, row);
+                        floor.Add(position);
+                        roomFloor.Add(position);
+                    }
+                }
+                dungeonData.Rooms.Add(new Room(roomsList[i].center, roomFloor));
             }
-
-            roomsList.RemoveAt(index);
         }
 
-        floor.AddRange(CreateRoomsRandomly(randomRooms));
-        floor.AddRange(CreateSimpleRooms(simpleRooms));
         return floor;
     }
 
-    private HashSet<Vector2Int> CreateRoomsRandomly(List<BoundsInt> roomsList)
+    private HashSet<Vector2Int> CreateRoomsRandomly()
     {
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
 
@@ -105,22 +128,27 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
                     floor.Add(position);
                 }
             }
+            dungeonData.Rooms.Add(new Room(roomsList[i].center, roomFloor));
         }
         return floor;
     }
-    private HashSet<Vector2Int> CreateSimpleRooms(List<BoundsInt> roomList)
+
+    private HashSet<Vector2Int> CreateSimpleRooms()
     {
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
-        foreach (var room in roomList)
+        foreach (var room in roomsList)
         {
+            var roomFloor = new HashSet<Vector2Int>();
             for (int col = offset; col < room.size.x - offset; col++)
             {
                 for (int row = offset; row < room.size.y; row++)
                 {
                     Vector2Int position = (Vector2Int)room.min + new Vector2Int(col, row);
                     floor.Add(position);
+                    roomFloor.Add(position);
                 }
             }
+            dungeonData.Rooms.Add(new Room(room.center, roomFloor));
         }
         return floor;
     }
@@ -138,6 +166,7 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
             HashSet<Vector2Int> newCorridor = CreateCorridor(currentRoomCenter, closest);
             currentRoomCenter = closest;
             corridors.UnionWith(newCorridor);
+            dungeonData.Path.UnionWith(newCorridor);
         }
         return corridors;
     }
