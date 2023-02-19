@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-//using Cinemachine;
+using Cinemachine;
 
 public class AgentPlacer : MonoBehaviour
 {
     [SerializeField] private GameObject enemyPrefab, playerPrefab;
 
     [SerializeField] private int playerRoomIndex;
-    //[SerializeField] private CinemachineVirtualCamera vCamera;
+    [SerializeField] private CinemachineVirtualCamera vCamera;
 
     [SerializeField] private int roomEnemiesCountMin;
     [SerializeField] private int roomEnemiesCountMax;
@@ -41,8 +41,8 @@ public class AgentPlacer : MonoBehaviour
                 GameObject player = Instantiate(playerPrefab);
                 player.transform.localPosition = dungeonData.Rooms[i].RoomCenterPos + Vector2.one * 0.5f;
                 //Make the camera follow the player
-                //vCamera.Follow = player.transform;
-                //vCamera.LookAt = player.transform;
+                vCamera.Follow = player.transform;
+                vCamera.LookAt = player.transform;
                 dungeonData.PlayerReference = player;
             }
             else

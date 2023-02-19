@@ -82,15 +82,17 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
                 var roomBounds = roomsList[i];
                 var roomCenter = new Vector2Int(Mathf.RoundToInt(roomBounds.center.x), Mathf.RoundToInt(roomBounds.center.y));
                 var roomFloor = RunRandomWalk(randomWalkParameters, roomCenter);
+                var realRoomFloor = new HashSet<Vector2Int>();
                 foreach (var position in roomFloor)
                 {
                     if (position.x >= (roomBounds.xMin + offset) && position.x <= (roomBounds.xMax - offset) &&
                         position.y >= (roomBounds.yMin + offset) && position.y <= (roomBounds.yMax - offset))
                     {
                         floor.Add(position);
+                        realRoomFloor.Add(position);
                     }
                 }
-                dungeonData.Rooms.Add(new Room(roomsList[i].center, roomFloor));
+                dungeonData.Rooms.Add(new Room(roomsList[i].center, realRoomFloor));
             }
             else
             {
@@ -120,15 +122,17 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkMapGenerator
             var roomBounds = roomsList[i];
             var roomCenter = new Vector2Int(Mathf.RoundToInt(roomBounds.center.x), Mathf.RoundToInt(roomBounds.center.y));
             var roomFloor = RunRandomWalk(randomWalkParameters, roomCenter);
+            var realRoomFloor = new HashSet<Vector2Int>();
             foreach (var position in roomFloor)
             {
                 if (position.x >= (roomBounds.xMin + offset) && position.x <= (roomBounds.xMax - offset) &&
                     position.y >= (roomBounds.yMin + offset) && position.y <= (roomBounds.yMax - offset))
                 {
                     floor.Add(position);
+                    realRoomFloor.Add(position);
                 }
             }
-            dungeonData.Rooms.Add(new Room(roomsList[i].center, roomFloor));
+            dungeonData.Rooms.Add(new Room(roomsList[i].center, realRoomFloor));
         }
         return floor;
     }

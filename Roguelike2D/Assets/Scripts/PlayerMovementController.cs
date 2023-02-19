@@ -29,6 +29,18 @@ public class PlayerMovementController : MonoBehaviour
     private void FixedUpdate()
     {
         if (movingEnabled)
-            rigidbody2D.MovePosition(rigidbody2D.position + movement.normalized * movementSpeed * Time.fixedDeltaTime);
+        {
+            // MovePosition ignores Collisions
+            // rigidbody2D.MovePosition(rigidbody2D.position + movement.normalized * movementSpeed * Time.fixedDeltaTime);
+
+            Vector2 desiredPosition = rigidbody2D.position + movement.normalized * movementSpeed * Time.fixedDeltaTime;
+            Vector2 direction = new Vector2(desiredPosition.x - rigidbody2D.position.x, desiredPosition.y - rigidbody2D.position.y);
+            Ray ray = new Ray(rigidbody2D.position, direction);
+            RaycastHit raycastHit;
+            if (!Physics.Raycast(ray, out raycastHit, direction.magnitude))
+                rigidbody2D.MovePosition(desiredPosition);
+            else
+                rigidbody2D.MovePosition(raycastHit.point);
+        }
     }
 }

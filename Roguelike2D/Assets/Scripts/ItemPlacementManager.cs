@@ -82,12 +82,6 @@ public class ItemPlacementManager : MonoBehaviour
         OnFinished?.Invoke();
     }
 
-    private IEnumerator TutorialCoroutine(Action code)
-    {
-        yield return new WaitForSeconds(3);
-        code();
-    }
-
     /// <summary>
     /// Places props near walls. We need to specify the props anw the placement start point
     /// </summary>
@@ -106,8 +100,7 @@ public class ItemPlacementManager : MonoBehaviour
         foreach (Item propToPlace in wallProps)
         {
             //We want to place only certain quantity of each prop
-            int quantity
-                = UnityEngine.Random.Range(propToPlace.PlacementQuantityMin, propToPlace.PlacementQuantityMax + 1);
+            int quantity = UnityEngine.Random.Range(propToPlace.PlacementQuantityMin, propToPlace.PlacementQuantityMax + 1);
 
             for (int i = 0; i < quantity; i++)
             {
