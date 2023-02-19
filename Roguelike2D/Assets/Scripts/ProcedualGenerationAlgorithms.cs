@@ -135,6 +135,18 @@ public static class Direction2D
 
     };
 
+    public static List<Vector2> eightDirectionsListNormalized = new List<Vector2>
+    {
+        new Vector2(0,1).normalized,
+        new Vector2(1,1).normalized,
+        new Vector2(1,0).normalized,
+        new Vector2(1,-1).normalized,
+        new Vector2(0,-1).normalized,
+        new Vector2(-1,-1).normalized,
+        new Vector2(-1,0).normalized,
+        new Vector2(-1,1).normalized,
+    };
+
     public static Vector2Int GetRandomCardinalDirection()
     {
         return cardinalDirectionsList[Random.Range(0, cardinalDirectionsList.Count)];
